@@ -84,7 +84,7 @@ def write_to_postgres(batch_df, batch_id):
 
     print(f"Processing batch {batch_id} with {batch_df.count()} records")
 
-    window_spec = Window.orderBy("played_at")
+    window_spec = Window.partitionBy("artist").orderBy("played_at")
     batch_df = batch_df.withColumn(
         "prev_played_at",
         lag("played_at", 1).over(window_spec)
