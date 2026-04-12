@@ -81,6 +81,19 @@ def get_recently_played():
         if results["items"]:
             item = results["items"][0]
             track = item["track"]
+            
+            # Check if this track was played in the last 10 minutes
+            played_at = item["played_at"]  # format: "2026-04-08T10:30:00.000Z"
+            from datetime import datetime, timezone
+            played_time = datetime.strptime(played_at, "%Y-%m-%dT%H:%M:%S.%fZ")
+            played_time = played_time.replace(tzinfo=timezone.utc)
+            now = datetime.now(timezone.utc)
+            minutes_ago = (now - played_time).total_seconds() / 60
+
+            if minutes_ago > 10:
+                print(f"Recently played track is {minutes_ago:.1f} min old — skipping")
+                return None
+
             return {
                 "track_id": track["id"],
                 "track_name": track["name"],
